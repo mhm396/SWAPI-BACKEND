@@ -7,10 +7,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 
 
-Route::get('/swapi', [StarshipController::class, "index"]);
-// Route::get('/swapi', function(){
-//     return "Hola funciona";
-// });
+Route::get('/swapi', [StarshipController::class, "index"]); //En principio solo mostrare el nombre de la nave y sus pilotos (actualmente nombre y modelo)
 
+Route::get('/swapi/all', [StarshipController::class, "allStarship"]); //Mostrar todas las naves
 
-Route::get('/swapi/{id}', [StarshipController::class, "show"]);
+Route::post('/swapi', [StarshipController::class, "store"]); //Agregar una nave
+
+Route::patch('/swapi/{id}', [StarshipController::class, "update"]); //Actualizar una nave
+
+Route::delete('/swapi/{id}', [StarshipController::class, "destroy"]); //Eliminar una nave

@@ -9,6 +9,8 @@ class Starship extends Model
 
     protected $table = 'starships';
 
+    protected $primaryKey = 'starship_id';
+
     protected $fillable = [
         'name',
         'model',
@@ -16,4 +18,10 @@ class Starship extends Model
         'cost_in_credits',
         'manufacturer',
     ];
+
+    public function pilots()
+{
+    //return $this->belongsToMany(Pilot::class);
+    return $this->belongsToMany(Pilot::class, 'pilot_starship', 'starship_id', 'pilot_id');
+}
 }

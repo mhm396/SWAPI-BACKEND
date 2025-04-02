@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use App\Models\Starship;
+use App\Models\Pilot;
 
 class StarshipController extends Controller
 {
@@ -15,7 +16,7 @@ class StarshipController extends Controller
      */
     public function index()
     {
-        $starships = Starship::select('name', 'model')->get();
+        $starships = Starship::select('starship_id','name', 'model')->get();
 
         return response()->json($starships);
     }
@@ -141,5 +142,75 @@ class StarshipController extends Controller
             'message' => 'Nave eliminada correctamente',
             'status' => 200
         ]);
+    }
+
+    public function addPilot($starshipId, $pilotId)
+    {
+        $starship = Starship::find($starshipId);
+        if (!$starship) {
+            return response()->json([
+                'message' => 'Nave no encontrada',
+                'status' => 404
+            ], 404);
+        }
+
+        $pilot = Pilot::find($pilotId);
+        if (!$pilot) {
+            return response()->json([
+                'message' => 'Piloto no encontrado',
+                'status' => 404
+            ], 404);
+        }
+
+        // Verificar si la relación ya existe
+        if (!$starship->pilots()->where('pilot_starship.pilot_id', $pilotId)->exists()) {
+            // Establecer la relación entre la nave y el piloto
+            $starship->pilots()->attach($pilotId);
+
+            return response()->json([
+                'message' => 'Piloto agregado a la nave correctamente',
+                'status' => 200
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'El piloto ya está asignado a esta nave',
+            'status' => 400
+        ], 400);
+    }
+    
+    public function removePilot($starshipId, $pilotId)
+    {
+        $starship = Starship::find($starshipId);
+        if (!$starship) {
+            return response()->json([
+                'message' => 'Nave no encontrada',
+                'status' => 404
+            ], 404);
+        }
+
+        $pilot = Pilot::find($pilotId);
+        if (!$pilot) {
+            return response()->json([
+                'message' => 'Piloto no encontrado',
+                'status' => 404
+            ], 404);
+        }
+
+        // Verificar si la relación existe
+        if ($starship->pilots()->where('pilot_starship.pilot_id', $pilotId)->exists()) {
+            // Eliminar la relación entre la nave y el piloto
+            $starship->pilots()->detach($pilotId);
+
+            return response()->json([
+                'message' => 'Piloto eliminado de la nave correctamente',
+                'status' => 200
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'El piloto no está asignado a esta nave',
+            'status' => 400
+        ], 400);
     }
 }

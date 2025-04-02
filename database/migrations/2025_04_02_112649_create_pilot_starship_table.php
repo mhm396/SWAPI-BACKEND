@@ -11,13 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('starships', function (Blueprint $table) {
-            $table->id('starship_id');
-            $table->string('name');
-            $table->string('model');
-            $table->string('starship_class');
-            $table->string('cost_in_credits');
-            $table->string('manufacturer');
+        Schema::create('pilot_starship', function (Blueprint $table) {
+            $table->foreignId('pilot_id')->constrained('pilots', 'pilot_id')->onDelete('cascade');
+            $table->foreignId('starship_id')->constrained('starships', 'starship_id')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -27,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('starships');
+        Schema::dropIfExists('pilot_starship');
     }
 };

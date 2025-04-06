@@ -30,7 +30,7 @@ class ImportStarships extends Command
      */
     public function handle()
     {
-        $this->info('Iniciando la importación de Starships desde la API...');
+        $this->info('Iniciando la importación de datos desde la API...');
 
         // Eliminar todos los registros sin truncar
         //Starship::query()->delete();
@@ -84,7 +84,6 @@ class ImportStarships extends Command
                         );
 
                         // Verificar si el piloto ya está asignado a esta nave para evitar duplicados
-                        // Cambiar la consulta para usar la columna correcta 'pilot_id'e
                             if (!DB::table('pilot_starship')
                             ->where('pilot_id', $pilotModel->pilot_id)
                             ->where('starship_id', $starshipModel->starship_id)
@@ -120,10 +119,10 @@ class ImportStarships extends Command
             $pilots = $response->json()['results'];
     
             foreach ($pilots as $pilot) {
-                // Comprobar si el piloto ya existe en la base de datos utilizando la URL
-                $pilotModel = Pilot::where('url', $pilot['url'])->first();
+                // Comprobar si el piloto ya existe en la base de datos utilizando su nombre (debería ser por id ya que es único pero se repetian varios pilotos)
+                $pilotModel = Pilot::where('name', $pilot['name'])->first();
     
-                // Si no existe, creamos el nuevo piloto
+                // Si no existe, creamos un nuevo piloto
                 if (!$pilotModel) {
                     $pilotModel = Pilot::create([
                         'url' => $pilot['url'],

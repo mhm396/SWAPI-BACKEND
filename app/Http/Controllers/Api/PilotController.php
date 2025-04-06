@@ -13,7 +13,7 @@ class PilotController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index() //Pruebas
     {
         $response = Http::get('https://swapi.dev/api/people/');
 
@@ -33,7 +33,6 @@ class PilotController extends Controller
         ], 500);
     }
 
-    //Prueba desde SWAPI para obtener a todos los pilotos
     public function allPilots() 
     {
              $pilots = Pilot::all();
@@ -69,7 +68,7 @@ class PilotController extends Controller
 
     public function getPilotWithStarships($id)
     {
-        // Buscar el piloto por su ID
+        // Buscar el piloto que contenga naves
         $pilot = Pilot::with('starships')->find($id);
 
         if (!$pilot) {

@@ -159,6 +159,8 @@ class StarshipController extends Controller
         // Formatear la respuesta con el nombre de la nave y los nombres de los pilotos
         $response = [
             'starship_name' => $starship->name,
+            'manufacturer' => $starship->manufacturer,
+            'cost_in_credits' => $starship->cost_in_credits,
             'pilots' => $starship->pilots->map(function ($pilot) {
                 return [
                     'pilot_id' => $pilot->pilot_id,  // Agregar el ID del piloto
@@ -190,7 +192,7 @@ class StarshipController extends Controller
 
     // Verificar si la relación ya existe
     if (!$starship->pilots()->where('pilot_starship.pilot_id', $pilotId)->exists()) {
-        // Establecer la relación entre la nave y el piloto con datos adicionales
+        // Establecer la relación entre la nave y el piloto con datos
         $starship->pilots()->attach($pilotId, [
             'pilot_name' => $pilot->name,
             'starship_name' => $starship->name,

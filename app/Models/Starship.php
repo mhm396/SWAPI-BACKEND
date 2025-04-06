@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Starship extends Model
 {
-
+    use HasFactory;
+    
     protected $table = 'starships';
 
     protected $primaryKey = 'starship_id';
@@ -20,13 +22,13 @@ class Starship extends Model
     ];
 
     public function pilots()
-{
-    //return $this->belongsToMany(Pilot::class);
-    return $this->belongsToMany(
-        Pilot::class,
-        'pilot_starship',
-        'starship_id',
-        'pilot_id'
-    );
-}
+    {
+        //return $this->belongsToMany(Pilot::class);
+        return $this->belongsToMany(
+            Pilot::class,
+            'pilot_starship',
+            'starship_id',
+            'pilot_id'
+        );
+    }
 }

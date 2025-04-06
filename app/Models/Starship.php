@@ -22,6 +22,11 @@ class Starship extends Model
     public function pilots()
 {
     //return $this->belongsToMany(Pilot::class);
-    return $this->belongsToMany(Pilot::class, 'pilot_starship', 'starship_id', 'pilot_id');
+    return $this->belongsToMany(
+        Pilot::class,
+        'pilot_starship',
+        'starship_id',
+        'pilot_id'
+    );
 }
 }

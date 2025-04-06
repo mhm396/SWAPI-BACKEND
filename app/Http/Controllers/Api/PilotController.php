@@ -36,38 +36,9 @@ class PilotController extends Controller
     //Prueba desde SWAPI para obtener a todos los pilotos
     public function allPilots() 
     {
-        $response = Http::get('https://swapi.dev/api/people/');
-
-        if ($response->successful()) {
-            
-            $pilotsData = $response->json()['results']; // Extraemos los datos de los pilotos desde la respuesta.
-            
-            $pilots = array_map(function($pilot) {
-                return [
-                    'name' => $pilot['name'],
-                    'height' => $pilot['height'],
-                    'mass' => $pilot['mass'],
-                    'hair_color' => $pilot['hair_color'],
-                    'skin_color' => $pilot['skin_color'],
-                    'eye_color' => $pilot['eye_color'],
-                    'birth_year' => $pilot['birth_year'],
-                    'gender' => $pilot['gender'],
-                    'homeworld' => $pilot['homeworld'],
-                    'films' => $pilot['films'],
-                    'species' => $pilot['species'],
-                    'starships' => $pilot['starships'],
-                    'vehicles' => $pilot['vehicles'],
-                    'url' => $pilot['url'],
-                ];
-            }, $pilotsData);
-
+             $pilots = Pilot::all();
+    
             return response()->json($pilots);
-        }
-
-        return response()->json([
-            'message' => 'No se pudieron obtener los pilotos.',
-            'status' => 500
-        ], 500);
     }
     
 
@@ -84,7 +55,39 @@ class PilotController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $pilot = Pilot::find($id);
+
+        if (!$pilot) {
+            return response()->json([
+                'message' => 'Piloto no encontrado',
+                'status' => 404
+            ], 404);
+        }
+
+        return response()->json($pilot);
+    }
+
+    public function getPilotWithStarships($id)
+    {
+        // Buscar el piloto por su ID
+        $pilot = Pilot::with('starships')->find($id);
+
+        if (!$pilot) {
+            return response()->json([
+                'message' => 'Piloto no encontrado',
+                'status' => 404
+            ], 404);
+        }
+
+        // Formatear la respuesta con el nombre del piloto y los nombres de las naves
+        $response = [
+            'pilot_name' => $pilot->name,
+            'starships' => $pilot->starships->map(function ($starship) {
+                return $starship->name;
+            })
+        ];
+
+        return response()->json($response);
     }
 
     /**

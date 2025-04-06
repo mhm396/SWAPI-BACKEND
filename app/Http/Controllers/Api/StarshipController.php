@@ -112,7 +112,7 @@ class StarshipController extends Controller
         $starship->save();
 
         return response()->json([
-            'message' => 'Nave catualizada correctamente',
+            'message' => 'Nave actualizada correctamente',
             'data' => $starship,
             'status' => 200
         ]);
@@ -144,9 +144,11 @@ class StarshipController extends Controller
         ]);
     }
 
-    public function addPilot($starshipId, $pilotId)
+    public function getStarshipWithPilots($id)
     {
-        $starship = Starship::find($starshipId);
+        // Buscar la nave por su ID
+        $starship = Starship::with('pilots')->find($id);
+
         if (!$starship) {
             return response()->json([
                 'message' => 'Nave no encontrada',
@@ -154,30 +156,58 @@ class StarshipController extends Controller
             ], 404);
         }
 
-        $pilot = Pilot::find($pilotId);
-        if (!$pilot) {
-            return response()->json([
-                'message' => 'Piloto no encontrado',
-                'status' => 404
-            ], 404);
-        }
+        // Formatear la respuesta con el nombre de la nave y los nombres de los pilotos
+        $response = [
+            'starship_name' => $starship->name,
+            'pilots' => $starship->pilots->map(function ($pilot) {
+                return [
+                    'pilot_id' => $pilot->pilot_id,  // Agregar el ID del piloto
+                    'name' => $pilot->name
+                ];
+            })
+        ];
 
-        // Verificar si la relación ya existe
-        if (!$starship->pilots()->where('pilot_starship.pilot_id', $pilotId)->exists()) {
-            // Establecer la relación entre la nave y el piloto
-            $starship->pilots()->attach($pilotId);
+        return response()->json($response);
+    }
 
-            return response()->json([
-                'message' => 'Piloto agregado a la nave correctamente',
-                'status' => 200
-            ]);
-        }
+    public function addPilot($starshipId, $pilotId)
+{
+    $starship = Starship::find($starshipId);
+    if (!$starship) {
+        return response()->json([
+            'message' => 'Nave no encontrada',
+            'status' => 404
+        ], 404);
+    }
+
+    $pilot = Pilot::find($pilotId);
+    if (!$pilot) {
+        return response()->json([
+            'message' => 'Piloto no encontrado',
+            'status' => 404
+        ], 404);
+    }
+
+    // Verificar si la relación ya existe
+    if (!$starship->pilots()->where('pilot_starship.pilot_id', $pilotId)->exists()) {
+        // Establecer la relación entre la nave y el piloto con datos adicionales
+        $starship->pilots()->attach($pilotId, [
+            'pilot_name' => $pilot->name,
+            'starship_name' => $starship->name,
+        ]);
 
         return response()->json([
-            'message' => 'El piloto ya está asignado a esta nave',
-            'status' => 400
-        ], 400);
+            'message' => 'Piloto agregado a la nave correctamente',
+            'pilot_name' => $pilot->name,
+            'status' => 200
+        ]);
     }
+
+    return response()->json([
+        'message' => 'El piloto ya está asignado a esta nave',
+        'status' => 400
+    ], 400);
+}
     
     public function removePilot($starshipId, $pilotId)
     {

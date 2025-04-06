@@ -32,9 +32,15 @@ class ImportStarships extends Command
     {
         $this->info('Iniciando la importación de Starships desde la API...');
 
-        Starship::truncate(); // Eliminar todos los registros de la tabla
+        // Eliminar todos los registros sin truncar
+        //Starship::query()->delete();
+        //Pilot::query()->delete();
+        //Resetear las tablas, funciona mejor truncarlas porque en mysql aun eliminando los registros no se reinician los ids
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('pilot_starship')->truncate();
+        Starship::truncate();
         Pilot::truncate();
-
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         $this->importStarships();
         $this->importPilots();
         $this->info('Datos importados correctamente');
@@ -78,10 +84,20 @@ class ImportStarships extends Command
                         );
 
                         // Verificar si el piloto ya está asignado a esta nave para evitar duplicados
-                        // Cambiar la consulta para usar la columna correcta 'pilot_id'
-                        if (!$starshipModel->pilots()->where('pilot_starship.pilot_id', $pilotModel->pilot_id)->exists()) {
-                            // Establecer la relación entre la nave y el piloto solo si no existe
-                            $starshipModel->pilots()->attach($pilotModel->pilot_id);
+                        // Cambiar la consulta para usar la columna correcta 'pilot_id'e
+                            if (!DB::table('pilot_starship')
+                            ->where('pilot_id', $pilotModel->pilot_id)
+                            ->where('starship_id', $starshipModel->starship_id)
+                            ->exists()) {
+                            // Establecer la relación entre la nave y el piloto
+                            DB::table('pilot_starship')->insert([
+                                'pilot_id' => $pilotModel->pilot_id,
+                                'pilot_name' => $pilotModel->name,
+                                'starship_id' => $starshipModel->starship_id,
+                                'starship_name' => $starshipModel->name,
+                                'created_at' => now(),
+                                'updated_at' => now(),
+                            ]);
                         }
                     } else {
                         $this->error("Error al obtener los datos del piloto desde la URL: $pilot");

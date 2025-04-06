@@ -12,16 +12,24 @@ Route::get('/swapi', [StarshipController::class, "index"]); //En principio solo 
 
 Route::get('/swapi/all', [StarshipController::class, "allStarship"]); //Mostrar todas las naves
 
+//OBTENER PILOTOS DE UNA NAVE Y NAVES DE UN PILOTO
+Route::get('/swapi/starships/{starship_id}/pilots', [StarshipController::class, 'getStarshipWithPilots']);
+Route::get('/swapi/pilots/{id}/starships', [PilotController::class, 'getPilotWithStarships']);
+
 Route::post('/swapi', [StarshipController::class, "store"]); //Agregar una nave
 
 Route::patch('/swapi/{id}', [StarshipController::class, "update"]); //Actualizar una nave
 
 Route::delete('/swapi/{id}', [StarshipController::class, "destroy"]); //Eliminar una nave
 
-Route::get('/swapi/pilots', [PilotController::class, "index"]);//Mostrar pilotos
+//Route::get('/swapi/pilots', [PilotController::class, "index"]);//Mostrar pilotos
 
 Route::get('/swapi/allpilots', [PilotController::class, "allPilots"]);//Mostrar pilotos
 
 Route::post('/swapi/starships/{starship_id}/add-pilot/{pilot_id}', [StarshipController::class, "addPilot"]); //Agregar un piloto a una nave
 
 Route::delete('/swapi/starships/{starship_id}/remove-pilot/{pilot_id}', [StarshipController::class, "removePilot"]); //Eliminar un piloto de una nave
+
+Route::get('/swapi/{id}', [StarshipController::class, "show"]); //Mostrar una nave
+
+Route::get('/swapi/pilot/{id}', [PilotController::class, "show"]); //Mostrar una nave

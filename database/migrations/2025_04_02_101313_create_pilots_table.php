@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('pilots', function (Blueprint $table) {
             $table->id('pilot_id');
             $table->string('name');
+            $table->string('url')->unique()->nullable();
             $table->timestamps();
         });
     }

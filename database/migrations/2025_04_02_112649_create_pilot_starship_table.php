@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('pilot_starship', function (Blueprint $table) {
             $table->foreignId('pilot_id')->constrained('pilots', 'pilot_id')->onDelete('cascade');
+            $table->string('pilot_name');
             $table->foreignId('starship_id')->constrained('starships', 'starship_id')->onDelete('cascade');
+            $table->string('starship_name');
             $table->timestamps();
         });
     }

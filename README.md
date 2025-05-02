@@ -34,7 +34,7 @@ Este proyecto consiste en desarrollar el backend de una aplicación web que gest
 
 ## Requisitos
 
-- **Laravel 5.8**
+- **Laravel**
 - **MySQL**
 - **Comando Artisan para importar datos desde SWAPI**
 - **Manejo de relaciones en base de datos** para naves y pilotos.
